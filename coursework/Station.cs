@@ -43,7 +43,7 @@ namespace coursework
             PlatformAmount = platformAmount;
             platforms = new bool[platformAmount];
             trains = new List<Train>();
-        }
+        }  
 
         public void ArriveТrain(Train train)
         {

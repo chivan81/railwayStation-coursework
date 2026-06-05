@@ -27,7 +27,7 @@ namespace coursework
             while (!isValid)
             {
                 Console.WriteLine("Виберіть дію:");
-                Console.WriteLine("1. Одеський вокзал");
+                Console.WriteLine("1. Одеський вокзал (купити квиток)");
                 Console.WriteLine("2. Панель диспетчера");
                 string choice = Console.ReadLine();
 
