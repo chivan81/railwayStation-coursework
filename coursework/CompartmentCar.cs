@@ -8,7 +8,7 @@ namespace coursework
         public CompartmentCar()
         {
             totalPlaces = 40;
-            freePlaces = 0;
+            freePlaces = 40;
             price = "800₴";
         }
         public override string CarInfo()
