@@ -15,9 +15,14 @@ namespace coursework
         public void ReducePlace()
         {
             if (freePlaces > 0)
+            {
                 freePlaces--;
+            }
             else
+            {
                 Console.WriteLine("Вільних місць немає!");
+            }
+                
         }
 
         public abstract string CarInfo();

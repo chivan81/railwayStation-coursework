@@ -20,12 +20,13 @@ namespace coursework
             Odessa.ArriveТrain(train2);
             Odessa.ArriveТrain(train3);
 
-            Ticket ticket = null;
             bool isValid = false;
             bool isDispatcher = false;
+            bool ticketBuy = false;
 
             while (!isValid)
             {
+                Ticket ticket = null;
                 Console.WriteLine("Виберіть дію:");
                 Console.WriteLine("1. Одеський вокзал (купити квиток)");
                 Console.WriteLine("2. Панель диспетчера");
@@ -40,18 +41,18 @@ namespace coursework
                         Console.WriteLine("Введіть номер потягу:");
                         while (true)
                         {
-                            if(int.TryParse(Console.ReadLine(), out trainNum)
+                            if (int.TryParse(Console.ReadLine(), out trainNum)
                                 && trainNum >= 1 && trainNum <= Odessa.Trains.Count())
                             {
                                 break;
                             }
                             Console.WriteLine("Не вірне значення номеру потягу, спробуйте ще раз");
                         }
-                        Train selectedTrain = Odessa.Trains[trainNum-1];
+                        Train selectedTrain = Odessa.Trains[trainNum - 1];
                         Console.Clear();
 
                         Console.WriteLine(selectedTrain);
-                        Console.WriteLine(selectedTrain.CarriagesCount()); 
+                        Console.WriteLine(selectedTrain.CarriagesCount());
                         Console.WriteLine("Введіть тип вагону: \n 1. Купе\n 2. Плацкарт");
                         string choiseCar;
                         while (true)
@@ -62,7 +63,7 @@ namespace coursework
                             Console.WriteLine("Невірний вибір! Спробуйте ще раз.");
                         }
                         switch (choiseCar)
-                        {   
+                        {
                             case "1":
                                 Console.Clear();
                                 int comNum;
@@ -76,13 +77,13 @@ namespace coursework
                                     }
                                     Console.WriteLine("Не вірне значення номеру вагону, спробуйте ще раз");
                                 }
-                                Carriage selectedCom = selectedTrain.Carriages[comNum-1];
+                                Carriage selectedCom = selectedTrain.Carriages[comNum - 1];
                                 Console.WriteLine(selectedCom.CarInfo());
                                 Console.WriteLine("Купити квиток?\n 1. Y  2. N");
                                 char comTicket;
                                 while (true)
                                 {
-                                    if(char.TryParse(Console.ReadLine(), out comTicket)
+                                    if (char.TryParse(Console.ReadLine(), out comTicket)
                                             && (comTicket == 'Y' || comTicket == 'N'))
                                     {
                                         break;
@@ -92,20 +93,26 @@ namespace coursework
                                 switch (comTicket)
                                 {
                                     case 'Y':
-                                        Console.Clear();
-                                        ticket = new Ticket(selectedTrain.ToString(), "Купе" , comNum);
-                                        selectedCom.ReducePlace();
-                                        isValid = true;
-                                        break;
+                                        if (selectedCom.FreePlaces() > 0)
+                                        {
+                                            Console.Clear();
+                                            ticket = new Ticket(selectedTrain.ToString(), "Купе", comNum);
+                                            selectedCom.ReducePlace();
+                                            ticketBuy = true;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            selectedCom.ReducePlace();
+                                            break;
+                                        }
                                     case 'N':
                                         Console.Clear();
                                         break;
                                     default:
                                         Console.WriteLine("Невірний вибір! Спробуйте ще раз.");
-                                        isValid = true;
                                         break;
                                 }
-                                isValid = true;
                                 break;
                             case "2":
                                 Console.Clear();
@@ -136,11 +143,19 @@ namespace coursework
                                 switch (sitTicket)
                                 {
                                     case 'Y':
-                                        Console.Clear();
-                                        ticket = new Ticket(selectedTrain.ToString(), "Плацкарт", sitNum);
-                                        selectedSit.ReducePlace();
-                                        isValid = true;
-                                        break;
+                                        if (selectedSit.FreePlaces() > 0)
+                                        {
+                                            Console.Clear();
+                                            ticket = new Ticket(selectedTrain.ToString(), "Плацкарт", sitNum);
+                                            selectedSit.ReducePlace();
+                                            ticketBuy = true;
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            selectedSit.ReducePlace();
+                                            break;
+                                        }
                                     case 'N':
                                         Console.Clear();
                                         break;
@@ -148,10 +163,8 @@ namespace coursework
                                         Console.WriteLine("Невірний вибір! Спробуйте ще раз.");
                                         break;
                                 }
-                                isValid = true;
                                 break;
                         }
-                        isValid = true;
                         break;
                     case "2":
                         Console.Clear();
@@ -242,54 +255,66 @@ namespace coursework
                                     Odessa.DepartureTrain(delNum);
                                     Console.WriteLine("Поїзд відбув. Перон звільнено.");
                                     Console.WriteLine(Odessa);
-                                    Console.ReadKey();
                                     isValid = true;
                                     break;
                                 }
                         }
-                        isValid = true;
+
                         break;
                     default:
                         Console.WriteLine("Невірний вибір! Спробуйте ще раз.");
                         break;
                 }
-            }
-            Passanger passanger = null;
-            bool validPass = false;
-            if (ticket != null)
-            {
-                while (!validPass)
+                Passanger passanger = null;
+                bool validPass = false;
+                if (ticket != null)
                 {
-                    try
+                    while (ticketBuy == true)
                     {
-                        Console.WriteLine("Введіть ПІБ:");
-                        string name = Console.ReadLine();
-                        Console.WriteLine("Введіть стать (M/F):");
-                        char gender = char.Parse(Console.ReadLine());
-                        Console.WriteLine("Введіть свій вік:");
-                        int age = int.Parse(Console.ReadLine());
-                        Console.WriteLine("Введіть номер паспорту:");
-                        string id = Console.ReadLine();
+                        try
+                        {
+                            Console.WriteLine("Введіть ПІБ:");
+                            string name = Console.ReadLine();
+                            Console.WriteLine("Введіть стать (M/F):");
+                            char gender = char.Parse(Console.ReadLine());
+                            Console.WriteLine("Введіть свій вік:");
+                            int age = int.Parse(Console.ReadLine());
+                            Console.WriteLine("Введіть номер паспорту:");
+                            string id = Console.ReadLine();
 
-                        passanger = new Passanger(name, gender, age, id);
+                            passanger = new Passanger(name, gender, age, id);
 
-                        validPass = true;
-                        break;
+                            ticketBuy = false;
+                            break;
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            Console.WriteLine($"Помилка: {ex.Message}");
+                        }
+                        catch (FormatException)
+                        {
+                            Console.WriteLine("Помилка: введіть коректне число!");
+                        }
                     }
-                    catch (ArgumentException ex)
-                    {
-                        Console.WriteLine($"Помилка: {ex.Message}");
-                    }
-                    catch (FormatException)
-                    {
-                        Console.WriteLine("Помилка: введіть коректне число!");
-                    }
+                    Console.Clear();
+                    Console.WriteLine(passanger);
+                    Console.WriteLine(ticket);
                 }
-                Console.Clear();
-                Console.WriteLine(passanger);
-                Console.WriteLine(ticket);
+                else if (!isDispatcher) { Console.WriteLine("Покупку скасовано."); }
+                Console.WriteLine("\nБажаєте купити ще квиток? (Y/N)");
+                char again;
+                while (true)
+                {
+                    if (char.TryParse(Console.ReadLine(), out again)
+                        && (again == 'Y' || again == 'N'))
+                        break;
+                    Console.WriteLine("Спробуйте ще раз.");
+                }
+                if (again == 'Y')
+                    isValid = false;
+                else
+                    isValid = true;
             }
-            else if (!isDispatcher) { Console.WriteLine("Покупку скасовано."); }
         }
     }
 }
